@@ -1,46 +1,11 @@
-﻿using System;
+﻿using System.Text;
 using System.Data.SqlClient;
+using Sql_Example;
 
-class Program
-{
-    static void Main()
-    {
-
-        string connectionString = "*";
-        using (SqlConnection connection = new SqlConnection(connectionString))
-        {
-            connection.Open();
-            Console.WriteLine("Connected to SQL Server");
-            string sql = "INSERT INTO [dbo].[GUESTS]([NAME],[FAX],[ORDER_ID]) VALUES (@NAME,@FAX,@ORDER_ID)";
-            using (SqlCommand command = new SqlCommand(sql, connection))
-            {
-                for (int i = 0; i < 200; i++)
-                {
-                    command .Parameters.AddWithValue("@NAME", "Guest " + i);
-                    command.Parameters.AddWithValue("@FAX", "Fax +380" + i);
-                    command.Parameters.AddWithValue("@ORDER_ID", i);
-                    command.ExecuteNonQuery();
-                    command.Parameters.Clear();
-                }
-            }
-            sql = """
-                INSERT INTO [dbo].[ORDERS]([DESCRIPTION],[PRICE],[ORDER_ID])
-                     VALUES
-                           (@DESCRIPTION,
-                           @PRICE,
-                           @ORDER_ID)
-                """;
-            using (SqlCommand command = new SqlCommand(sql, connection))
-            {
-                for (int i = 0; i < 200; i++)
-                {
-                    command.Parameters.AddWithValue("@DESCRIPTION", "Order " + i);
-                    command.Parameters.AddWithValue("@PRICE", i * 100);
-                    command.Parameters.AddWithValue("@ORDER_ID", i);
-                    command.ExecuteNonQuery();
-                    command.Parameters.Clear();
-                }
-            }
-        }
-    }
-}
+Console.InputEncoding = Encoding.UTF8;
+Console.OutputEncoding = Encoding.UTF8;
+USERS_CH_Manager cH_Manager = new USERS_CH_Manager("*");
+cH_Manager.INSERT_RANDOM_GENERATED_USERS(10000);
+Console.WriteLine(cH_Manager.WATCHDOG_TIMER_SELECT_ALL_USERS());
+cH_Manager.SEARCH_USER();
+Console.WriteLine(cH_Manager.GetDatabaseSize());
