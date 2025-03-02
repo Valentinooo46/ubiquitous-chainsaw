@@ -1,63 +1,71 @@
-﻿using OrderSystem;
-using System;
-using System.Data.SqlClient;
-using System.Text;
+﻿using System.Text;
 
-class Program
+namespace ConsoleApp1
 {
-    static void Main()
+    internal class Program
     {
-        Console.OutputEncoding = Encoding.UTF8;
-        Console.InputEncoding = Encoding.UTF8;
-        string ConString = "*";
-        //Product product = new Product();
-        //product.Description = null;
-        //for (int i = 0; i < 10; i++)
-        //{ 
-        //    product.Name = $"Product{i + 1}";
-        //    product.Price = 1000;
-        //    product.CategoryId = 1;
-
-        //    product.CreatedDate = DateTime.Now;
-        //    product.SaveProduct(ConString);
-        //}
-        //User user = new User();
-        //for (int i = 0; i < 10; i++)
-        //{
-
-        //    user.FirstName = $"John{i+1}";
-        //    user.LastName = $"Dee{i}";
-        //    user.Email = $"JohnDee{i+1}@gmail.com";
-        //    user.PhoneNumber = "1234567890";
-        //    user.Password = "1234567890";
-        //    user.AddUser(ConString);
-        //}
-
-        //Order order = new Order();
-
-        //for (int i = 0; i < 10; i++)
-        //{
-        //    order.UserId = i + 1;
-        //    order.OrderStatusId = 1;
-        //    order.CreatedDate = DateTime.Now;
-
-
-        //    order.AddOrderItem(1,i+1);
-        //    order.AddOrderItem(2, i + 2);
-        //    order.AddOrderItem(3, i + 3);
-        //    order.SaveOrder(ConString);
-
-        //}
-        DatabaseQueries databaseQueries = new DatabaseQueries(ConString);
-        var result = databaseQueries.GetAverageProductPrice();
-        Console.WriteLine($"Average Product Price: {result}");
-        var result2 = databaseQueries.GetUsersWithTotalSpentMoreThan(500);
-        Console.WriteLine("Users with total spent more than 500:");
-        foreach (var item in result2)
+        static void Main(string[] args)
         {
-            Console.WriteLine($"User Id: {item.Id},User Email:{item.Email}");
-        }
-        
+            Console.InputEncoding = Encoding.UTF8;
+            Console.OutputEncoding = Encoding.UTF8;
+            MyAppContext appContext = new MyAppContext();
+            appContext.Database.EnsureCreated();
+            Boolean exit = false;
+            short choice;
+            do
+            {
+                Console.WriteLine("1. Переглянути список користувачів");
+                Console.WriteLine("2. Додати нового користувача");
+                Console.WriteLine("3. Видалити користувача");
 
+                Console.WriteLine("4. Вийти");
+                Console.WriteLine("5.Додати користувачів");
+                Console.Write("Ваш вибір: ");
+                choice = Convert.ToInt16(Console.ReadLine());
+                switch (choice)
+                {
+                    case 1:
+                        List<UserEntityNS.UserEntity> list = ManagerUsers.GetUsers();
+                        foreach (var item in list)
+                        {
+                            Console.WriteLine(item.ToString());
+                        }
+                        break;
+                    case 2:
+                        UserEntityNS.UserEntity user = new UserEntityNS.UserEntity();
+                        Console.Write("Введіть ім'я: ");
+                        user.FirstName = Console.ReadLine();
+                        Console.Write("Введіть прізвище: ");
+                        user.LastName = Console.ReadLine();
+                        Console.Write("Введіть телефон: ");
+                        user.Phone = Console.ReadLine();
+                        Console.Write("Введіть дату народження: ");
+                        user.BirthDate = DateOnly.Parse(Console.ReadLine());
+                        ManagerUsers.AddUser(user);
+
+                        break;
+                    case 3:
+                        Console.Write("Введіть Id користувача: ");
+                        int Id = Convert.ToInt32(Console.ReadLine());
+                        ManagerUsers.DeleteUser(Id);
+
+                        break;
+                    case 4:
+                        exit = true;
+                        break;
+                    case 5:
+                        Console.Write("Введіть кількість користувачів: ");
+                        int count = Convert.ToInt32(Console.ReadLine());
+                        ManagerUsers.SeedData(count);
+                        break;
+                    default:
+                        Console.WriteLine("Невірний вибір");
+                        break;
+                }
+            } while (!exit);
+
+
+
+        }
     }
 }
