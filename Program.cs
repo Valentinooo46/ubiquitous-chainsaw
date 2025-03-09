@@ -1,71 +1,34 @@
-﻿using System.Text;
+﻿using System;
+using System.Collections.Generic;
+using System.Linq;
+using System.Text;
+using System.Threading.Tasks;
+using Microsoft.EntityFrameworkCore;
+using SpecieProject.Implements;
 
-namespace ConsoleApp1
+
+namespace SpecieProject
 {
     internal class Program
     {
         static void Main(string[] args)
         {
-            Console.InputEncoding = Encoding.UTF8;
-            Console.OutputEncoding = Encoding.UTF8;
-            MyAppContext appContext = new MyAppContext();
-            appContext.Database.EnsureCreated();
-            Boolean exit = false;
-            short choice;
-            do
+           SpecieService specieService = new(new Repository<Specie>(new MyAppContext()));
+            var specie = new Specie
             {
-                Console.WriteLine("1. Переглянути список користувачів");
-                Console.WriteLine("2. Додати нового користувача");
-                Console.WriteLine("3. Видалити користувача");
-
-                Console.WriteLine("4. Вийти");
-                Console.WriteLine("5.Додати користувачів");
-                Console.Write("Ваш вибір: ");
-                choice = Convert.ToInt16(Console.ReadLine());
-                switch (choice)
-                {
-                    case 1:
-                        List<UserEntityNS.UserEntity> list = ManagerUsers.GetUsers();
-                        foreach (var item in list)
-                        {
-                            Console.WriteLine(item.ToString());
-                        }
-                        break;
-                    case 2:
-                        UserEntityNS.UserEntity user = new UserEntityNS.UserEntity();
-                        Console.Write("Введіть ім'я: ");
-                        user.FirstName = Console.ReadLine();
-                        Console.Write("Введіть прізвище: ");
-                        user.LastName = Console.ReadLine();
-                        Console.Write("Введіть телефон: ");
-                        user.Phone = Console.ReadLine();
-                        Console.Write("Введіть дату народження: ");
-                        user.BirthDate = DateOnly.Parse(Console.ReadLine());
-                        ManagerUsers.AddUser(user);
-
-                        break;
-                    case 3:
-                        Console.Write("Введіть Id користувача: ");
-                        int Id = Convert.ToInt32(Console.ReadLine());
-                        ManagerUsers.DeleteUser(Id);
-
-                        break;
-                    case 4:
-                        exit = true;
-                        break;
-                    case 5:
-                        Console.Write("Введіть кількість користувачів: ");
-                        int count = Convert.ToInt32(Console.ReadLine());
-                        ManagerUsers.SeedData(count);
-                        break;
-                    default:
-                        Console.WriteLine("Невірний вибір");
-                        break;
-                }
-            } while (!exit);
-
-
-
+                Name = "Lion",
+                Description = "The lion is a species in the family Felidae; it is a muscular, deep-chested cat with a short, rounded head, a reduced neck and round ears, and a hairy tuft at the end of its tail."
+            };
+            specieService.Add(specie);
+            foreach (var item in specieService.GetAll())
+            {
+                Console.WriteLine(item);
+            }
+            specieService.Add(new Specie
+            {
+                Name = "",
+                Description = ""
+            });
         }
     }
 }
