@@ -7,17 +7,14 @@ using System.Text;
 using System.Threading.Tasks;
 using System.ComponentModel.DataAnnotations.Schema;
 using System.ComponentModel.DataAnnotations;
+using AnimalHouse.Entities;
 
-namespace SpecieProject.Implements
+namespace AnimalHouse.Implements
 {
-    public class MyAppContext : DbContext
+    public class MyAppContext(DbContextOptions<MyAppContext> options) : DbContext(options)
     {
-        public DbSet<Specie> species { get; set; }
+        public DbSet<AnimalEntity> AnimalEntities { get; set; }
         
-        protected override void OnConfiguring(DbContextOptionsBuilder optionsBuilder)
-        {
-            optionsBuilder.UseNpgsql("***");
-        }
 
     }
 }

@@ -5,18 +5,13 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 
-namespace SpecieProject.Implements
+namespace AnimalHouse.Implements
 {
-    public class Repository<T> : Interfaces.IRepository<T> where T : class
+    public class Repository<T>(MyAppContext context) : Interfaces.IRepository<T> where T : class
     {
-        private readonly MyAppContext _context;
-        private readonly DbSet<T> _dbSet;
+        private readonly MyAppContext _context = context;
+        private readonly DbSet<T> _dbSet = context.Set<T>();
 
-        public Repository(MyAppContext context)
-        {
-            _context = context;
-            _dbSet = context.Set<T>();   // Це сама табличка з якомю працює даний репозиторій.
-        }
         public T? GetById(int id)
         {
             return _dbSet.Find(id);
@@ -24,7 +19,7 @@ namespace SpecieProject.Implements
 
         public IEnumerable<T> GetAll()
         {
-            return _dbSet.ToList();
+            return [.. _dbSet];
         }
 
         public void Add(T entity)

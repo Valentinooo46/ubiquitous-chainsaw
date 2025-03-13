@@ -6,10 +6,11 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 
-namespace SpecieProject.Implements
+
+namespace AnimalHouse.Entities
 {
-    [Table("Species")]
-    public class Specie
+    [Table("Animals")]
+    public class AnimalEntity
     {
         [Key]
         public int Id { get; set; }
@@ -17,9 +18,13 @@ namespace SpecieProject.Implements
         public string Name { get; set; } = null!;
         [Required, StringLength(200)]
         public string Description { get; set; } = null!;
+        [Required]
+        public int AGE { get; set; }
+        //[ForeignKey("Specie")]
+        //public int ShelterId { get; set; }
         public override string ToString()
         {
-            return $"Id: {Id}, Name: {Name}, Description: {Description}";
+            return $"Id: {Id}, Name: {Name}, Description: {Description}, Age: {AGE}";
         }
     }
 }
