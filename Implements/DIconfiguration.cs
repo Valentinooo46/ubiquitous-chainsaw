@@ -23,12 +23,15 @@ namespace AnimalHouse.Implements
                 {
                     //Прописумо налаштування для різних обєктів
                     services.AddDbContext<MyAppContext>(options =>
-                        options.UseNpgsql("*"));
+                        options.UseNpgsql("***"));
 
                     //Якщо у коді потрібно репозіторій, то на основі IRepository буде створюватися
                     //Repository
                     services.AddScoped(typeof(IRepository<>), typeof(Repository<>));
                     services.AddScoped<IAnimalService, AnimalService>();
+                    services.AddScoped<ICustomerService, CustomerService>();
+                    services.AddScoped<IAppointmentService, AppointmentService>();
+                    services.AddScoped<IMedicalRecordsService, MedicalRecordsService>();
 
                 })
                 .Build();

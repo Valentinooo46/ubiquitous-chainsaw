@@ -14,7 +14,14 @@ namespace AnimalHouse.Implements
     public class MyAppContext(DbContextOptions<MyAppContext> options) : DbContext(options)
     {
         public DbSet<AnimalEntity> AnimalEntities { get; set; }
-        
+        public DbSet<Customer> Customers { get; set; }
+        public DbSet<Appointment> Appointments { get; set; }
+        public DbSet<MedicalRecord> MedicalRecords { get; set; }
+
+        //protected override void OnConfiguring(DbContextOptionsBuilder optionsBuilder)
+        //{
+        //    optionsBuilder.UseNpgsql("***");
+        //}
 
     }
 }

@@ -16,4 +16,5 @@ namespace AnimalHouse.Interfaces
         bool DeleteAnimal(int id);
         
     }
+
 }

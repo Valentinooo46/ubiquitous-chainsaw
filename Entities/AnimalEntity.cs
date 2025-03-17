@@ -27,4 +27,50 @@ namespace AnimalHouse.Entities
             return $"Id: {Id}, Name: {Name}, Description: {Description}, Age: {AGE}";
         }
     }
+    [Table("Customers")]
+    public class Customer
+    {
+        [Key]
+        public int Id { get; set; }
+        [Required, StringLength(100)]
+        public string Name { get; set; } = null!;
+        [StringLength(20)]
+        public string? Phone { get; set; }
+        [StringLength(100)]
+        public string? Email { get; set; }
+        public string? Address { get; set; }
+    }
+
+    [Table("Appointments")]
+    public class Appointment
+    {
+        [Key]
+        public int Id { get; set; }
+        [Required]
+        public int AnimalId { get; set; }
+        [Required]
+        public DateTime Date { get; set; }
+        public string? Description { get; set; }
+
+        [ForeignKey("AnimalId")]
+        public AnimalEntity Animal { get; set; } = null!;
+    }
+
+    [Table("MedicalRecords")]
+    public class MedicalRecord
+    {
+        [Key]
+        public int Id { get; set; }
+        [Required]
+        public int AnimalId { get; set; }
+        [Required]
+        public DateTime VisitDate { get; set; }
+        [Required]
+        public string Diagnosis { get; set; } = null!;
+        
+
+        [ForeignKey("AnimalId")]
+        public AnimalEntity Animal { get; set; } = null!;
+    }
 }
+
