@@ -17,6 +17,9 @@ namespace AnimalHouse.Implements
         public DbSet<Customer> Customers { get; set; }
         public DbSet<Appointment> Appointments { get; set; }
         public DbSet<MedicalRecord> MedicalRecords { get; set; }
+        public DbSet<CustomerAdoptInfo> CustomerAdoptInfos { get; set; }
+        public DbSet<Shelter> Shelters { get; set; }
+        public DbSet<Employee> employees { get; set; }
 
         //protected override void OnConfiguring(DbContextOptionsBuilder optionsBuilder)
         //{

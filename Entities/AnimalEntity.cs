@@ -20,8 +20,9 @@ namespace AnimalHouse.Entities
         public string Description { get; set; } = null!;
         [Required]
         public int AGE { get; set; }
-        //[ForeignKey("Specie")]
-        //public int ShelterId { get; set; }
+        [ForeignKey("Shelter")]
+        public int? ShelterId { get; set; }
+        public Shelter? Shelter { get; set; } = null;
         public override string ToString()
         {
             return $"Id: {Id}, Name: {Name}, Description: {Description}, Age: {AGE}";
@@ -71,6 +72,50 @@ namespace AnimalHouse.Entities
 
         [ForeignKey("AnimalId")]
         public AnimalEntity Animal { get; set; } = null!;
+    }
+    [Table("CustomersAdoptInfo")]
+    public class CustomerAdoptInfo
+    {
+        [Key]
+        public int Id { get; set; }
+        [Required]
+        public int CustomerId { get; set; }
+        [Required]
+        public int AnimalId { get; set; }
+        [ForeignKey("CustomerId")]
+        public Customer Customer { get; set; } = null!;
+        [ForeignKey("AnimalId")]
+        public AnimalEntity Animal { get; set; } = null!;
+
+    }
+    [Table("Employees")]
+    public class Employee
+    {
+        [Key]
+        public int Id { get; set; }
+        [Required, StringLength(100)]
+        public string Name { get; set; } = null!;
+        [StringLength(20)]
+        public string? Phone { get; set; }
+        [StringLength(100)]
+        public string? Email { get; set; }
+        [Required,ForeignKey("Shelter")]
+        public int ShelterId { get; set; }
+        public Shelter? Shelter { get; set; } = null;
+    }
+    [Table("Shelters")]
+    public class Shelter
+    {
+        [Key]
+        public int Id { get; set; }
+        [Required, StringLength(100)]
+        public string Name { get; set; } = null!;
+        [StringLength(100)]
+        public string? Address { get; set; }
+        [StringLength(20)]
+        public string? Phone { get; set; }
+        [StringLength(100)]
+        public string? Email { get; set; }
     }
 }
 

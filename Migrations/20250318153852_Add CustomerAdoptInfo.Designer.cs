@@ -3,6 +3,7 @@ using System;
 using AnimalHouse.Implements;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 using Npgsql.EntityFrameworkCore.PostgreSQL.Metadata;
 
@@ -11,9 +12,11 @@ using Npgsql.EntityFrameworkCore.PostgreSQL.Metadata;
 namespace AnimalHouse.Migrations
 {
     [DbContext(typeof(MyAppContext))]
-    partial class MyAppContextModelSnapshot : ModelSnapshot
+    [Migration("20250318153852_Add CustomerAdoptInfo")]
+    partial class AddCustomerAdoptInfo
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        /// <inheritdoc />
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder
@@ -43,12 +46,7 @@ namespace AnimalHouse.Migrations
                         .HasMaxLength(50)
                         .HasColumnType("character varying(50)");
 
-                    b.Property<int?>("ShelterId")
-                        .HasColumnType("integer");
-
                     b.HasKey("Id");
-
-                    b.HasIndex("ShelterId");
 
                     b.ToTable("Animals");
                 });
@@ -129,37 +127,6 @@ namespace AnimalHouse.Migrations
                     b.ToTable("CustomersAdoptInfo");
                 });
 
-            modelBuilder.Entity("AnimalHouse.Entities.Employee", b =>
-                {
-                    b.Property<int>("Id")
-                        .ValueGeneratedOnAdd()
-                        .HasColumnType("integer");
-
-                    NpgsqlPropertyBuilderExtensions.UseIdentityByDefaultColumn(b.Property<int>("Id"));
-
-                    b.Property<string>("Email")
-                        .HasMaxLength(100)
-                        .HasColumnType("character varying(100)");
-
-                    b.Property<string>("Name")
-                        .IsRequired()
-                        .HasMaxLength(100)
-                        .HasColumnType("character varying(100)");
-
-                    b.Property<string>("Phone")
-                        .HasMaxLength(20)
-                        .HasColumnType("character varying(20)");
-
-                    b.Property<int>("ShelterId")
-                        .HasColumnType("integer");
-
-                    b.HasKey("Id");
-
-                    b.HasIndex("ShelterId");
-
-                    b.ToTable("Employees");
-                });
-
             modelBuilder.Entity("AnimalHouse.Entities.MedicalRecord", b =>
                 {
                     b.Property<int>("Id")
@@ -183,45 +150,6 @@ namespace AnimalHouse.Migrations
                     b.HasIndex("AnimalId");
 
                     b.ToTable("MedicalRecords");
-                });
-
-            modelBuilder.Entity("AnimalHouse.Entities.Shelter", b =>
-                {
-                    b.Property<int>("Id")
-                        .ValueGeneratedOnAdd()
-                        .HasColumnType("integer");
-
-                    NpgsqlPropertyBuilderExtensions.UseIdentityByDefaultColumn(b.Property<int>("Id"));
-
-                    b.Property<string>("Address")
-                        .HasMaxLength(100)
-                        .HasColumnType("character varying(100)");
-
-                    b.Property<string>("Email")
-                        .HasMaxLength(100)
-                        .HasColumnType("character varying(100)");
-
-                    b.Property<string>("Name")
-                        .IsRequired()
-                        .HasMaxLength(100)
-                        .HasColumnType("character varying(100)");
-
-                    b.Property<string>("Phone")
-                        .HasMaxLength(20)
-                        .HasColumnType("character varying(20)");
-
-                    b.HasKey("Id");
-
-                    b.ToTable("Shelters");
-                });
-
-            modelBuilder.Entity("AnimalHouse.Entities.AnimalEntity", b =>
-                {
-                    b.HasOne("AnimalHouse.Entities.Shelter", "Shelter")
-                        .WithMany()
-                        .HasForeignKey("ShelterId");
-
-                    b.Navigation("Shelter");
                 });
 
             modelBuilder.Entity("AnimalHouse.Entities.Appointment", b =>
@@ -252,17 +180,6 @@ namespace AnimalHouse.Migrations
                     b.Navigation("Animal");
 
                     b.Navigation("Customer");
-                });
-
-            modelBuilder.Entity("AnimalHouse.Entities.Employee", b =>
-                {
-                    b.HasOne("AnimalHouse.Entities.Shelter", "Shelter")
-                        .WithMany()
-                        .HasForeignKey("ShelterId")
-                        .OnDelete(DeleteBehavior.Cascade)
-                        .IsRequired();
-
-                    b.Navigation("Shelter");
                 });
 
             modelBuilder.Entity("AnimalHouse.Entities.MedicalRecord", b =>

@@ -23,7 +23,7 @@ namespace AnimalHouse.Implements
                 {
                     //Прописумо налаштування для різних обєктів
                     services.AddDbContext<MyAppContext>(options =>
-                        options.UseNpgsql("***"));
+                        options.UseNpgsql("*"));
 
                     //Якщо у коді потрібно репозіторій, то на основі IRepository буде створюватися
                     //Repository
@@ -32,6 +32,9 @@ namespace AnimalHouse.Implements
                     services.AddScoped<ICustomerService, CustomerService>();
                     services.AddScoped<IAppointmentService, AppointmentService>();
                     services.AddScoped<IMedicalRecordsService, MedicalRecordsService>();
+                    services.AddScoped<ICustomerAdoptInfoService, CustomerAdoptInfoService>();
+                    services.AddScoped<IShelterService, ShelterService>();
+                    services.AddScoped<IEmployeeService, EmployeeService>();
 
                 })
                 .Build();
