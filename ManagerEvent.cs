@@ -1,4 +1,5 @@
-﻿using System;
+﻿using Microsoft.EntityFrameworkCore;
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
@@ -15,11 +16,23 @@ namespace Mobizon
             db.UserEvents.Add(userEvent);
             db.SaveChanges();
         }
+        public static void AddUserEvent(int UserId, int EventTypeId, DateTime EventDate)
+        {
+            using var db = new AppContext();
+            var userEvent = new UserEventEntity
+            {
+                UserId = UserId,
+                EventTypeId = EventTypeId,
+                EventDate = EventDate.ToUniversalTime()
+            };
+            db.UserEvents.Add(userEvent);
+            db.SaveChanges();
+        }
 
         public static List<UserEventEntity> GetUserEvent()
         {
             using var db = new AppContext();
-            return [.. db.UserEvents];
+            return [.. db.UserEvents.Include(x=>x.EventType)];
         }
         public static UserEventEntity? GetUserEventById(int id)
         {
@@ -104,6 +117,18 @@ namespace Mobizon
         {
             using (var db = new AppContext())
             {
+                db.EventTypes.Add(eventType);
+                db.SaveChanges();
+            }
+        }
+        public static void AddEventType(string name)
+        {
+            using (var db = new AppContext())
+            {
+                var eventType = new EventTypeEntity
+                {
+                    Name = name
+                };
                 db.EventTypes.Add(eventType);
                 db.SaveChanges();
             }

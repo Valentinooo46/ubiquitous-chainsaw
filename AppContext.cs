@@ -19,7 +19,7 @@ namespace Mobizon
         public DbSet<EventTypeEntity> EventTypes { get; set; }
         protected override void OnConfiguring(DbContextOptionsBuilder optionsBuilder)
         {
-            optionsBuilder.UseNpgsql("***");
+            optionsBuilder.UseNpgsql("*");
         }
         protected override void OnModelCreating(ModelBuilder modelBuilder)
         {

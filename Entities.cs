@@ -11,6 +11,7 @@ namespace Mobizon
     [Table("User")]
     public class UserEntity
     {
+        [Key]
         public int Id { get; set; }
         [Required, MaxLength(100)]
         public string Name { get; set; } = string.Empty;
@@ -23,6 +24,7 @@ namespace Mobizon
     [Table("UserNotification")]
     public class UserNotificationEntity
     {
+        [Key]
         public int Id { get; set; }
         [ForeignKey("User")]
         public int UserId { get; set; }
@@ -35,6 +37,7 @@ namespace Mobizon
     [Table("UserEvent")]
     public class UserEventEntity
     {
+        [Key]
         public int Id { get; set; }
         [ForeignKey("User")]
         public int UserId { get; set; }
@@ -49,6 +52,7 @@ namespace Mobizon
     [Table("EventType")]
     public class EventTypeEntity
     {
+        [Key]
         public int Id { get; set; }
         [Required, MaxLength(100)]
         public string Name { get; set; } = string.Empty; // "День народження", "День ангела" і т.д.
