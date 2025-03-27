@@ -1,69 +1,30 @@
-﻿// See https://aka.ms/new-console-template for more information
-using Mobizon;
+﻿using Microsoft.Extensions.DependencyInjection;
+using OLX;
+using OLX.Context;
+using OLX.Interfaces;
+using Newtonsoft.Json;
+using OLX.Entities;
 
+var serviceProvider = DIConfiguration.GetServiceProvider();
+var categoryService = serviceProvider.GetService<INewCategoryService>();
+var subcategoryService = serviceProvider.GetService<ISubCategoryService>();
+////categoryService.CreateCategory("Electronics","Electronic devices");
+////categoryService.CreateCategory("Clothes", "For babies,womens,and mens");
+////categoryService.CreateCategory("Books", "For all ages");
+////categoryService.CreateCategory("RAM", "supprot all  type of memory",1);
+//categoryService.CreateCategory("T-Shirts", "For all ages",2);
+//categoryService.CreateCategory("Pants", "For all ages", 2);
+//categoryService.CreateCategory("Shirts", "For all ages", 2);
+//categoryService.CreateCategory("Shorts", "For all ages", 2);
+//categoryService.CreateCategory("Jeans", "For all ages", 2);
+//categoryService.CreateCategory("Sweaters", "For all ages", 2);
+//categoryService.CreateCategory("Female Jeans", "for women", 9);
 
-//UserEntity user = new UserEntity
-//{
-//    Name = "Ivan",
-//    PhoneNumber = "+380123456789"
-//};
-//ManagerUser.AddUser(user);
-
-//ManagerEventType.AddEventType("New Year");
-//ManagerEventType.AddEventType("Christmas");
-//ManagerEventType.AddEventType("Valentine's Day");
-
-ManagerEvent.AddUserEvent(1, 9, DateTime.Now);
-ManagerEvent.AddUserEvent(1, 10, DateTime.Now);
-ManagerEvent.AddUserEvent(1, 11, DateTime.Now);
-var EventList = ManagerEvent.GetUserEvent();
-
-var mobizonClient = new MobizonClient("your_api_key_here"); // Замініть на ваш API ключ
-
-foreach (var item in EventList)
+string JsonText = File.ReadAllText("C:\\Users\\valea\\source\\repos\\OLX\\OLX\\JSONFile1.json");
+var JsonObject = JsonConvert.DeserializeObject<JsObject>(JsonText)!;
+var CategoryList = JsonObject.categories;
+foreach (var category in CategoryList)
 {
-    if (item.EventDate.Date == DateTime.Now.Date)
-    {
-        
-        UserNotificationEntity userNotification = new UserNotificationEntity
-        {
-            UserId = item.UserId,
-            SentAt = DateTime.Now
-            
-        };
-        if (item.EventType.Name == "Birthday")
-        {
-            Console.WriteLine("Happy Birthday ");
-            userNotification.Message = "Happy Birthday";
-        }
-        else if (item.EventType.Name == "Angel Day")
-        {
-            Console.WriteLine("Happy Angel Day ");
-            userNotification.Message = "Happy Angel Day";
-        }
-        else if (item.EventType.Name == "New Year")
-        {
-            Console.WriteLine("Happy New Year ");
-            userNotification.Message = "Happy New Year";
-        }
-        else if (item.EventType.Name == "Christmas")
-        {
-            Console.WriteLine("Merry Christmas ");
-            userNotification.Message = "Merry Christmas";
-        }
-        else if (item.EventType.Name == "Valentine's Day")
-        {
-            Console.WriteLine("Happy Valentine's Day ");
-            userNotification.Message = "Happy Valentine's Day";
-        }
-        ManagerUserNotification.AddUserNotification(userNotification);
-
-        // Отримайте номер телефону користувача
-        //var user = ManagerUser.GetUserById(item.UserId);
-        //if (user != null)
-        //{
-        //    mobizonClient.SendMessage(user.PhoneNumber, userNotification.Message);
-        //}
-    }
-
+    categoryService.CreateCategory(category.Name, category.Slug, category.Subcategories);
+    
 }
