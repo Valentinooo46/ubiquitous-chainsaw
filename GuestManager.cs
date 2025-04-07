@@ -11,58 +11,42 @@ namespace ThreadExamples
     public class GuestManager
     {
         public event AddGuestAsyncDelegate? AddGuestAsyncEvent;
-        
+
 
         public void AddGuest(uint count)
         {
+            List<Task> tasks = new List<Task>();
 
             if (count % 10 == 0)
             {
-                Thread[] threads = new Thread[count / 10];
-                for (int i = 0; i < threads.Length; i++)
+                for (int i = 0; i < count / 10; i++)
                 {
-                    threads[i] = new Thread(AddGuestAsync);
-                    threads[i].Start((uint)10);
-
+                    tasks.Add(Task.Run(() => AddGuestAsync((uint)10)));
                 }
-                for (int i = 0; i < threads.Length; i++)
-                {
-                    threads[i].Join();
-                }
-
             }
             else if (count % 2 == 0)
             {
-                Thread[] threads = new Thread[count / 2];
-                for (int i = 0; i < threads.Length; i++)
+                for (int i = 0; i < count / 2; i++)
                 {
-                    threads[i] = new Thread(AddGuestAsync);
-                    threads[i].Start((uint)2);
-                    
-                }
-                for (int i = 0; i < threads.Length; i++)
-                {
-                    threads[i].Join();
+                    tasks.Add(Task.Run(() => AddGuestAsync((uint)2)));
                 }
             }
             else if (count % 3 == 0)
             {
-                Thread[] threads = new Thread[count / 3];
-                for (int i = 0; i < threads.Length; i++)
+                for (int i = 0; i < count / 3; i++)
                 {
-                    threads[i] = new Thread(AddGuestAsync);
-                    threads[i].Start((uint)3);
-
-                }
-                for (int i = 0; i < threads.Length; i++)
-                {
-                    threads[i].Join();
+                    tasks.Add(Task.Run(() => AddGuestAsync((uint)3)));
                 }
             }
             else
             {
-                throw new ArgumentException("Not impemented yet...  :(");
+                for (int i = 0; i < count; i++)
+                {
+                    tasks.Add(Task.Run(() => AddGuestAsync((uint)1)));
+                }
             }
+
+            Task.WaitAll(tasks.ToArray());
             AddGuestAsyncEvent?.Invoke(count);
         }
         private void AddGuestAsync(object? count)

@@ -28,7 +28,7 @@ namespace ThreadExamples
             var bytes = client.GetByteArrayAsync(url).Result;
 
             ImageAdress = Path.GetRandomFileName() + ".jpg";
-            File.WriteAllBytes(@"***" + ImageAdress, bytes);
+            File.WriteAllBytes(@"../../../images/" + ImageAdress, bytes);
             
         }
     }
