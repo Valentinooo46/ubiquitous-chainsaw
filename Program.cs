@@ -1,45 +1,39 @@
-﻿using Bogus.DataSets;
-using System.Diagnostics;
-using System.Text;
+using Microsoft.EntityFrameworkCore;
 
-namespace ThreadExamples
+namespace WebApplication3
 {
-
-    internal class Program
+    public class Program
     {
-
-        static void Main()
+        public static void Main(string[] args)
         {
-            Console.OutputEncoding = Encoding.UTF8;
-            Console.InputEncoding = Encoding.UTF8;
-            GuestManager guestManager = new GuestManager();
-            guestManager.AddGuestAsyncEvent += PrintResult;
-            Stopwatch stopwatch = new Stopwatch();
-            stopwatch.Start();
-            guestManager.AddGuest(1);
-            stopwatch.Stop();
-            Console.WriteLine($"Використано часу на додавання 1 користувача: {stopwatch.ElapsedMilliseconds} ms");
-            Console.WriteLine("--------------------------------------------------");
-            Console.WriteLine("Введіть кількість користувачів для додавання:");
-            uint count = uint.Parse(Console.ReadLine() ?? "0");
-            Console.WriteLine($"Прогнозований час додавання:{stopwatch.ElapsedMilliseconds * (long)count} ms");
-            if (count > 0)
+            var builder = WebApplication.CreateBuilder(args);
+
+            // Add services to the container.
+            builder.Services.AddControllersWithViews();
+            builder.Services.AddDbContext<NewContext>(options =>
+                options.UseNpgsql(builder.Configuration.GetConnectionString("DefaultConnection")));
+            var app = builder.Build();
+
+            // Configure the HTTP request pipeline.
+            if (!app.Environment.IsDevelopment())
             {
-                stopwatch.Restart();
-                guestManager.AddGuest(count);
-                stopwatch.Stop();
-                Console.WriteLine($"Використано часу на додавання {count} користувачів: {stopwatch.ElapsedMilliseconds} ms");
-            }
-            else
-            {
-                Console.WriteLine("не валідна к-сть користувачів....");
+                app.UseExceptionHandler("/Home/Error");
+                // The default HSTS value is 30 days. You may want to change this for production scenarios, see https://aka.ms/aspnetcore-hsts.
+                app.UseHsts();
             }
 
-        }
-        static void PrintResult(uint count)
-        {
-            Console.WriteLine($"Added {count} guests");
-        }
+            app.UseHttpsRedirection();
+            app.UseStaticFiles();
 
+            app.UseRouting();
+
+            app.UseAuthorization();
+
+            app.MapControllerRoute(
+                name: "default",
+                pattern: "{controller=Home}/{action=Index}/{id?}");
+
+            app.Run();
+        }
     }
 }
