@@ -30,6 +30,47 @@ namespace WebApplication3.Controllers
             }
 
         }
+        [HttpGet]
+        public IActionResult Upload()
+        {
+            return View();
+        }
+        [HttpPost]
+        public async Task<IActionResult> Upload(IFormFile photo, string title, string summary, string slug,string content)
+        {
+            if (photo == null || photo.Length == 0)
+            {
+                return BadRequest("Фото не вибрано.");
+            }
+
+            // Збереження файлу
+            string uploadsFolder = Path.Combine("wwwroot", "uploads");
+            Directory.CreateDirectory(uploadsFolder);
+            string uniqueFileName = Guid.NewGuid().ToString() + Path.GetExtension(photo.FileName);
+            string filePath = Path.Combine(uploadsFolder, uniqueFileName);
+
+            await using (var stream = new FileStream(filePath, FileMode.Create))
+            {
+                await photo.CopyToAsync(stream);
+            }
+
+            // Створення об'єкта для збереження в базі даних
+            var photoObject = new New
+            {
+                title = title,
+                summary = summary,
+                slug = slug,
+                content = content,
+                image = uniqueFileName
+            };
+            
+
+            // Збереження у базу даних
+            await _context.NewModels.AddAsync(photoObject);
+            await _context.SaveChangesAsync();
+
+            return Ok($"Об'єкт збережено: {title}");
+        }
 
         public IActionResult Privacy()
         {
