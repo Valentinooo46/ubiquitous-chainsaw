@@ -1,7 +1,10 @@
 using System.Diagnostics;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
+using SixLabors.ImageSharp;
+using SixLabors.ImageSharp.Processing;
 using WebApplication3.Models;
+using static System.Net.Mime.MediaTypeNames;
 
 namespace WebApplication3.Controllers
 {
@@ -42,27 +45,49 @@ namespace WebApplication3.Controllers
             {
                 return BadRequest("Фото не вибрано.");
             }
+            // Шлях до папки для збереження
+            string uploadsFolder = Path.Combine(Directory.GetCurrentDirectory(), "wwwroot", "uploads");
+            if (!Directory.Exists(uploadsFolder))
+            {
+                Directory.CreateDirectory(uploadsFolder);
+            }
 
-            // Збереження файлу
-            string uploadsFolder = Path.Combine("wwwroot", "uploads");
-            Directory.CreateDirectory(uploadsFolder);
-            string uniqueFileName = Guid.NewGuid().ToString() + Path.GetExtension(photo.FileName);
-            string filePath = Path.Combine(uploadsFolder, uniqueFileName);
-
-            await using (var stream = new FileStream(filePath, FileMode.Create))
+            // Збереження оригінального файлу
+            string originalFilePath = Path.Combine(uploadsFolder, photo.FileName);
+            using (var stream = new FileStream(originalFilePath, FileMode.Create))
             {
                 await photo.CopyToAsync(stream);
             }
-
-            // Створення об'єкта для збереження в базі даних
+            // Створення зображень різних розмірів
+            string[] sizes = { "small", "medium", "large" };
+            int[] dimensions = { 100, 500, 1000 }; // Розміри для кожного варіанту
             var photoObject = new New
             {
                 title = title,
                 summary = summary,
                 slug = slug,
                 content = content,
-                image = uniqueFileName
+                image = Path.Combine(uploadsFolder, sizes[0], Path.GetFileNameWithoutExtension(photo.FileName) + ".webp")
+
             };
+            for (int i = 0; i < sizes.Length; i++)
+            {
+                string sizeFolder = Path.Combine(uploadsFolder, sizes[i]);
+                if (!Directory.Exists(sizeFolder))
+                {
+                    Directory.CreateDirectory(sizeFolder);
+                }
+
+                string resizedFilePath = Path.Combine(sizeFolder, Path.GetFileNameWithoutExtension(photo.FileName)+ ".webp");
+                
+                using (var image = await SixLabors.ImageSharp.Image.LoadAsync(originalFilePath))
+                {
+                    image.Mutate(x => { x.Resize(dimensions[i], 0);} ); // Масштабування по ширині, висота автоматична
+                    await image.SaveAsWebpAsync(resizedFilePath);
+                }
+            }
+            // Створення об'єкта для збереження в базі даних
+            
             
 
             // Збереження у базу даних
