@@ -1,130 +1,58 @@
-﻿
-using Newtonsoft.Json;
-using NovaPoshta.Context;
-using System;
-using System.Diagnostics;
-using System.Text;
-using System.Timers;
+﻿using System.Text;
 
-namespace NovaPoshta
+namespace CopyDir
 {
     internal class Program
     {
-        static async Task Main(string[] args)
+        static void Main()
         {
-            
-            Console.InputEncoding = Encoding.UTF8;
             Console.OutputEncoding = Encoding.UTF8;
-            const string API = "**";
-            AreaContext[] areaContext = { new AreaContext(), new AreaContext(),new AreaContext() };
-            Stopwatch stopwatch = new Stopwatch();
-            stopwatch.Start();
-            List<Task> tasks = new();
             
-            // Додавання областей
-            var areaModel = new NPRequest
-            {
-                modelName = "AddressGeneral",
-                calledMethod = "getAreas",
-                methodProperties = null!,
-                apiKey = API
-            };
-            var areaJson = JsonConvert.SerializeObject(areaModel);
-            HttpClient client = new HttpClient();
-            HttpContent areaContent = new StringContent(areaJson, Encoding.UTF8, "application/json");
-            var areaResponse = await client.PostAsync("https://api.novaposhta.ua/v2.0/json/", areaContent);
-            if (areaResponse.IsSuccessStatusCode)
-            {
-                var areaResponseString = await areaResponse.Content.ReadAsStringAsync();
-                var areaData = JsonConvert.DeserializeObject<NovaPoshtaResponse<Area>>(areaResponseString)!;
-                if (!areaContext[0].Areas.Any())
-                {
-                    tasks.Add(areaContext[0].Areas.AddRangeAsync(areaData.data));
+            Console.WriteLine("Введіть шлях до початкової папки:");
+            string sourceDir = Console.ReadLine() ?? string.Empty;
 
-                }
+            Console.WriteLine("Введіть шлях до вихідної папки:");
+            string destinationDir = Console.ReadLine() ?? string.Empty;
+
+            if (!Directory.Exists(sourceDir))
+            {
+                Console.WriteLine("Початкова папка не існує.");
+                return;
             }
 
-            // Додавання міст
-            var cityModel = new NPRequest
+            if (!Directory.Exists(destinationDir))
             {
-                modelName = "Address",
-                calledMethod = "getCities",
-                methodProperties = new methodProperties("500"),
-                apiKey = API
-            };
-            var cityJson = JsonConvert.SerializeObject(cityModel);
-            HttpContent cityContent = new StringContent(cityJson, Encoding.UTF8, "application/json");
-            var cityResponse = await client.PostAsync("https://api.novaposhta.ua/v2.0/json/", cityContent);
-            if (cityResponse.IsSuccessStatusCode)
-            {
-                var cityResponseString = await cityResponse.Content.ReadAsStringAsync();
-                var cityData = JsonConvert.DeserializeObject<NovaPoshtaResponse<City>>(cityResponseString)!;
-                if (!areaContext[1].Cities.Any())
-                {
-                    tasks.Add(Task.Run(() => Parallel.For(0, cityData.data.Length, i =>
-                    {
-                        lock (areaContext[1])
-                        {
-                            
-                            areaContext[1].Cities.Add(cityData.data[i]);
-                        }
-
-
-
-
-
-
-                    })));
-
-
-
-                    
-                }
+                Directory.CreateDirectory(destinationDir);
             }
-            
-           
-            // Додавання відділень
-            var warehouseModel = new NPRequest
+
+            try
             {
-                modelName = "AddressGeneral",
-                calledMethod = "getWarehouses",
-                methodProperties = new methodProperties { CityName = "Луцьк",Limit = "50"},
-                apiKey = API
-            };
-            var warehouseJson = JsonConvert.SerializeObject(warehouseModel);
-            HttpContent warehouseContent = new StringContent(warehouseJson, Encoding.UTF8, "application/json");
-            var warehouseResponse = await client.PostAsync("https://api.novaposhta.ua/v2.0/json/", warehouseContent);
-            if (warehouseResponse.IsSuccessStatusCode)
-            {
-                var warehouseResponseString = await warehouseResponse.Content.ReadAsStringAsync();
-                var warehouseData = JsonConvert.DeserializeObject<NovaPoshtaResponse<Warehouse>>(warehouseResponseString);
-                if (!areaContext[2].Warehouses.Any())
-                {
-                    tasks.Add(Task.Run(() => Parallel.For(0, warehouseData.data.Length, i =>
-                    {
-                        lock (areaContext[2])
-                        {
-
-                            areaContext[2].Warehouses.Add(warehouseData.data[i]);
-                        }
-
-
-
-
-
-
-                    })));
-                }
+                CopyFilesParallel(sourceDir, destinationDir);
+                Console.WriteLine("Копіювання завершено.");
             }
-            for (int i = 0; i < tasks.Count; i++)
+            catch (Exception ex)
             {
-                await tasks[i];
-                areaContext[i].SaveChanges();
+                Console.WriteLine($"Помилка: {ex.Message}");
             }
-            stopwatch.Stop();
-            Console.WriteLine($"Час виконання: {stopwatch.ElapsedMilliseconds} мс");
-            client.Dispose();
+        }
 
+        static void CopyFilesParallel(string sourceDir, string destinationDir)
+        {
+            var files = Directory.GetFiles(sourceDir, "*", SearchOption.AllDirectories);
+
+            Parallel.ForEach(files, file =>
+            {
+                // Обчислення відносного шляху та створення папок
+                string relativePath = Path.GetRelativePath(sourceDir, file);
+                string destinationPath = Path.Combine(destinationDir, relativePath);
+
+                // Створення папки, якщо вона не існує
+                Directory.CreateDirectory(Path.GetDirectoryName(destinationPath)!);
+
+                // Копіювання файлу
+                File.Copy(file, destinationPath, overwrite: true);
+                Console.WriteLine($"Скопійовано: {file} -> {destinationPath}");
+            });
         }
     }
 }
