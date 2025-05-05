@@ -1,58 +1,36 @@
-﻿using System.Text;
-
-namespace CopyDir
+namespace WebApplication2
 {
-    internal class Program
+    public class Program
     {
-        static void Main()
+        public static void Main(string[] args)
         {
-            Console.OutputEncoding = Encoding.UTF8;
-            
-            Console.WriteLine("Введіть шлях до початкової папки:");
-            string sourceDir = Console.ReadLine() ?? string.Empty;
+            var builder = WebApplication.CreateBuilder(args);
 
-            Console.WriteLine("Введіть шлях до вихідної папки:");
-            string destinationDir = Console.ReadLine() ?? string.Empty;
+            // Add services to the container.
+            builder.Services.AddControllersWithViews();
 
-            if (!Directory.Exists(sourceDir))
+            var app = builder.Build();
+
+            // Configure the HTTP request pipeline.
+            if (!app.Environment.IsDevelopment())
             {
-                Console.WriteLine("Початкова папка не існує.");
-                return;
+                app.UseExceptionHandler("/Home/Error");
+                // The default HSTS value is 30 days. You may want to change this for production scenarios, see https://aka.ms/aspnetcore-hsts.
+                app.UseHsts();
             }
 
-            if (!Directory.Exists(destinationDir))
-            {
-                Directory.CreateDirectory(destinationDir);
-            }
+            app.UseHttpsRedirection();
+            app.UseStaticFiles();
 
-            try
-            {
-                CopyFilesParallel(sourceDir, destinationDir);
-                Console.WriteLine("Копіювання завершено.");
-            }
-            catch (Exception ex)
-            {
-                Console.WriteLine($"Помилка: {ex.Message}");
-            }
-        }
+            app.UseRouting();
 
-        static void CopyFilesParallel(string sourceDir, string destinationDir)
-        {
-            var files = Directory.GetFiles(sourceDir, "*", SearchOption.AllDirectories);
+            app.UseAuthorization();
 
-            Parallel.ForEach(files, file =>
-            {
-                // Обчислення відносного шляху та створення папок
-                string relativePath = Path.GetRelativePath(sourceDir, file);
-                string destinationPath = Path.Combine(destinationDir, relativePath);
+            app.MapControllerRoute(
+                name: "default",
+                pattern: "{controller=Home}/{action=Index}/{id?}");
 
-                // Створення папки, якщо вона не існує
-                Directory.CreateDirectory(Path.GetDirectoryName(destinationPath)!);
-
-                // Копіювання файлу
-                File.Copy(file, destinationPath, overwrite: true);
-                Console.WriteLine($"Скопійовано: {file} -> {destinationPath}");
-            });
+            app.Run();
         }
     }
 }
