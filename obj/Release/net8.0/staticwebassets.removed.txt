@@ -1,0 +1,4 @@
+C:\Users\valea\source\repos\WebApplication3\wwwroot\uploads\large\old-hut-locomotive-railway.webp
+C:\Users\valea\source\repos\WebApplication3\wwwroot\uploads\medium\old-hut-locomotive-railway.webp
+C:\Users\valea\source\repos\WebApplication3\wwwroot\uploads\old-hut-locomotive-railway.jpg
+C:\Users\valea\source\repos\WebApplication3\wwwroot\uploads\small\old-hut-locomotive-railway.webp
